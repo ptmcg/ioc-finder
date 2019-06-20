@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Python package for finding indicators of compromise in text."""
 
+import asyncio
 import json
 import os
 import sys
@@ -79,20 +80,23 @@ def _remove_url_paths(urls, text, parse_urls_without_scheme=True):
     return text
 
 
-def parse_domain_names(text):
+async def parse_domain_names(text):
     """."""
+    await asyncio.sleep(0)
     domains = ioc_grammars.domain_name.searchString(text.lower())
     return _listify(domains)
 
 
-def parse_ipv4_addresses(text):
+async def parse_ipv4_addresses(text):
     """."""
+    await asyncio.sleep(0)
     addresses = ioc_grammars.ipv4_address.searchString(text)
     return _listify(addresses)
 
 
-def parse_ipv6_addresses(text):
+async def parse_ipv6_addresses(text):
     """."""
+    await asyncio.sleep(0)
     addresses = ioc_grammars.ipv6_address.searchString(text)
     return _listify(addresses)
 
@@ -137,44 +141,51 @@ def parse_authentihashes_(text):
     return authentihashes
 
 
-def parse_md5s(text):
+async def parse_md5s(text):
     """."""
+    await asyncio.sleep(0)
     md5s = ioc_grammars.md5.searchString(text)
     return _listify(md5s)
 
 
-def parse_sha1s(text):
+async def parse_sha1s(text):
     """."""
+    await asyncio.sleep(0)
     sha1s = ioc_grammars.sha1.searchString(text)
     return _listify(sha1s)
 
 
-def parse_sha256s(text):
+async def parse_sha256s(text):
     """."""
+    await asyncio.sleep(0)
     sha256s = ioc_grammars.sha256.searchString(text)
     return _listify(sha256s)
 
 
-def parse_sha512s(text):
+async def parse_sha512s(text):
     """."""
+    await asyncio.sleep(0)
     sha512s = ioc_grammars.sha512.searchString(text)
     return _listify(sha512s)
 
 
-def parse_ssdeeps(text):
+async def parse_ssdeeps(text):
     """."""
+    await asyncio.sleep(0)
     ssdeeps = ioc_grammars.ssdeep.searchString(text)
     return _listify(ssdeeps)
 
 
-def parse_asns(text):
+async def parse_asns(text):
     """."""
+    await asyncio.sleep(0)
     asns = ioc_grammars.asn.searchString(text)
     return _listify(asns)
 
 
-def parse_cves(text):
+async def parse_cves(text):
     """."""
+    await asyncio.sleep(0)
     cves = ioc_grammars.cve.searchString(text)
     return _listify(cves)
 
@@ -192,8 +203,9 @@ def parse_ipv4_cidrs(text):
 #     return _listify(cidrs)
 
 
-def parse_registry_key_paths(text):
+async def parse_registry_key_paths(text):
     """."""
+    await asyncio.sleep(0)
     parsed_registry_key_paths = ioc_grammars.registry_key_path.searchString(text)
     full_parsed_registry_key_paths = _listify(parsed_registry_key_paths)
 
@@ -208,20 +220,23 @@ def parse_registry_key_paths(text):
     return registry_key_paths
 
 
-def parse_google_adsense_ids(text):
+async def parse_google_adsense_ids(text):
     """."""
+    await asyncio.sleep(0)
     adsense_publisher_ids = ioc_grammars.google_adsense_publisher_id.searchString(text)
     return _listify(adsense_publisher_ids)
 
 
-def parse_google_analytics_ids(text):
+async def parse_google_analytics_ids(text):
     """."""
+    await asyncio.sleep(0)
     analytics_tracker_ids = ioc_grammars.google_analytics_tracker_id.searchString(text)
     return _listify(analytics_tracker_ids)
 
 
-def parse_bitcoin_addresses(text):
+async def parse_bitcoin_addresses(text):
     """."""
+    await asyncio.sleep(0)
     bitcoin_addresses = ioc_grammars.bitcoin_address.searchString(text)
     return _listify(bitcoin_addresses)
 
@@ -240,26 +255,30 @@ def _remove_xmpp_local_part(xmpp_addresses, text):
     return text
 
 
-def parse_mac_addresses(text):
+async def parse_mac_addresses(text):
     """."""
+    await asyncio.sleep(0)
     mac_addresses = ioc_grammars.mac_address.searchString(text)
     return _listify(mac_addresses)
 
 
-def parse_user_agents(text):
+async def parse_user_agents(text):
     """."""
+    await asyncio.sleep(0)
     user_agents = ioc_grammars.user_agent.searchString(text)
     return _listify(user_agents)
 
 
-def parse_file_paths(text):
+async def parse_file_paths(text):
     """."""
+    await asyncio.sleep(0)
     file_paths = ioc_grammars.file_path.searchString(text)
     return _listify(file_paths)
 
 
-def parse_phone_numbers(text):
+async def parse_phone_numbers(text):
     """."""
+    await asyncio.sleep(0)
     phone_numbers = ioc_grammars.phone_number.searchString(text[::-1])
     return [phone_number[::-1] for phone_number in _listify(phone_numbers)]
 
@@ -357,13 +376,6 @@ def find_iocs(
     # if not parse_address_from_cidr:
     # text = _remove_items(iocs['ipv6_cidrs'], text)
 
-    # domains
-    iocs['domains'] = parse_domain_names(text)
-
-    # ip addresses
-    iocs['ipv4s'] = parse_ipv4_addresses(text)
-    iocs['ipv6s'] = parse_ipv6_addresses(text)
-
     # file hashes
     if parse_imphashes:
         iocs['imphashes'] = parse_imphashes_(text)
@@ -375,22 +387,28 @@ def find_iocs(
         # remove the authentihashes so they are not also parsed as sha256s
         text = _remove_items(iocs['authentihashes'], text)
 
-    iocs['sha512s'] = parse_sha512s(text)
-    iocs['sha256s'] = parse_sha256s(text)
-    iocs['sha1s'] = parse_sha1s(text)
-    iocs['md5s'] = parse_md5s(text)
-    iocs['ssdeeps'] = parse_ssdeeps(text)
-
-    # misc
-    iocs['asns'] = parse_asns(text)
-    iocs['cves'] = parse_cves(text)
-    iocs['registry_key_paths'] = parse_registry_key_paths(text)
-    iocs['google_adsense_publisher_ids'] = parse_google_adsense_ids(text)
-    iocs['google_analytics_tracker_ids'] = parse_google_analytics_ids(text)
-    iocs['bitcoin_addresses'] = parse_bitcoin_addresses(text)
-    iocs['mac_addresses'] = parse_mac_addresses(text)
-    iocs['user_agents'] = parse_user_agents(text)
-    iocs['file_paths'] = parse_file_paths(text)
-    iocs['phone_numbers'] = parse_phone_numbers(text)
+    loop = asyncio.get_event_loop()
+    iocs['domains'], iocs['ipv4s'], iocs['ipv6s'], iocs['sha512s'], iocs['sha256s'], iocs['sha1s'], iocs['md5s'], iocs['ssdeeps'], iocs['asns'], iocs['cves'], iocs['registry_key_paths'], iocs['google_adsense_publisher_ids'], iocs['google_analytics_tracker_ids'], iocs['bitcoin_addresses'], iocs['mac_addresses'], iocs['user_agents'], iocs['file_paths'], iocs['phone_numbers'] = loop.run_until_complete(
+        asyncio.gather(
+            parse_domain_names(text),
+            parse_ipv4_addresses(text),
+            parse_ipv6_addresses(text),
+            parse_sha512s(text),
+            parse_sha256s(text),
+            parse_sha1s(text),
+            parse_md5s(text),
+            parse_ssdeeps(text),
+            parse_asns(text),
+            parse_cves(text),
+            parse_registry_key_paths(text),
+            parse_google_adsense_ids(text),
+            parse_google_analytics_ids(text),
+            parse_bitcoin_addresses(text),
+            parse_mac_addresses(text),
+            parse_user_agents(text),
+            parse_file_paths(text),
+            parse_phone_numbers(text)
+        )
+    )
 
     return iocs
